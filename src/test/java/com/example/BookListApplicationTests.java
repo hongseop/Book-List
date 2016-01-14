@@ -55,6 +55,33 @@ public class BookListApplicationTests {
 			System.out.println(book.toString());
 		}
 	}
+	
+	@Test
+	public void testReadTitle() throws Exception {
+
+		List<BookVO> bookList = null;
+//		BookVO vo = new BookVO();
+//				
+//		bookList = mapper.readTitle(vo.setTitle("old"));
+//		
+//
+//		for (BookVO book : bookList) {
+//			System.out.println(book.toString());
+//		}
+		
+
+		List<BookVO> result = new ArrayList<>();
+		
+// 		VO 이용 		
+//		BookVO vo = new BookVO();
+//		vo.setTitle("old");
+//		result = mapper.readTitle(vo);
+		
+		
+		result = mapper.readTitle("old");
+		System.out.println(result.toString());
+
+	}
 
 	@Test
 	public void testInsert() throws Exception {
