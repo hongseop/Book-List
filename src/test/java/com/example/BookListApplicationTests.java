@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.openapi.starter.BookListApplication;
-import com.openapi.starter.mapper.BookDataMapper;
+import com.openapi.starter.mapper.BookMapper;
 import com.openapi.starter.vo.BookVO;
 import com.ximpleware.AutoPilot;
 import com.ximpleware.VTDGen;
@@ -33,7 +33,7 @@ import com.ximpleware.VTDNav;
 public class BookListApplicationTests {
 
 	@Autowired
-	private BookDataMapper mapper;
+	private BookMapper mapper;
 
 	@Autowired
 	private DataSource ds;
@@ -52,32 +52,14 @@ public class BookListApplicationTests {
 		bookList = mapper.readAll();
 
 		for (BookVO book : bookList) {
-			System.out.println(book.toString());
 		}
 	}
-	
+
 	@Test
 	public void testReadTitle() throws Exception {
 
 		List<BookVO> bookList = null;
-//		BookVO vo = new BookVO();
-//				
-//		bookList = mapper.readTitle(vo.setTitle("old"));
-//		
-//
-//		for (BookVO book : bookList) {
-//			System.out.println(book.toString());
-//		}
-		
-
 		List<BookVO> result = new ArrayList<>();
-		
-// 		VO 이용 		
-//		BookVO vo = new BookVO();
-//		vo.setTitle("old");
-//		result = mapper.readTitle(vo);
-		
-		
 		result = mapper.readTitle("old");
 		System.out.println(result.toString());
 
@@ -133,8 +115,9 @@ public class BookListApplicationTests {
 
 	@Test
 	public void testXML() throws Exception {
-		String url = "http://openapi.naver.com/search?key=c1b406b32dbbbbeee5f2a36ddc14067f&query=%EC%82%BC%EA%B5%AD%EC%A7%80&display=10&start=1&target=book";
-
+		String url = "http://openapi.naver.com/search?key=d54e5b142aa91ba7c325eebde2e20d44&query=%EC%82%BC%EA%B5%AD%EC%A7%80&display=10&start=1&target=book"; 
+		//데이터를 받아올 주소.
+		
 		URL ocu = new URL(url);
 		URLConnection con = ocu.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -142,86 +125,64 @@ public class BookListApplicationTests {
 		StringBuilder sb = new StringBuilder();
 
 		BookVO vo = new BookVO();
+		// 받아온 데이터를 저장할 객체.
 
 		while ((inputLine = in.readLine()) != null) {
-			sb.append(inputLine);// 데이터를 스트링으로 연결받
+			sb.append(inputLine);// 데이터를 문자열을 이용해 연결해서 받음.
 		}
-		in.close();
+		in.close();//BufferedReader 종료시킴.
 
-		String xml = sb.toString(); // 사용자 정의 객체를 출력하면 주소가 나타난다. toString() 은
-									// 참조변수에 저장된 주소가 아닌 데이터의 모양세로 바꾸어주는 메서드이다?
+		String xml = sb.toString(); // toString() 은 참조변수에 저장된 주소가 아닌 데이터의 모양세로 바꾸어주는 메서드이다.
+									// 실제 데이터를 변수 xml 에 저장한다. (데이터도 xml 형식인가?)
 
 		// 파싱준비
-		VTDGen vg = new VTDGen();// 어디에 쓰이는지 잘 모르는 객체 선
-		vg.setDoc(xml.getBytes());// 위에 선언된 객체의 문서관련 메서드를 이용하여 바이트단위 데이터로 객체에 저장
-		vg.parse(true);// 저장된 데이터를 파싱할수 있는 것이라 선언?
+		VTDGen vg = new VTDGen();// 파싱에 사용되는 객체 선언.
+		vg.setDoc(xml.getBytes());// 선언된 객체를 통해 데이터가 저장된 변수인 xml 을 바이트단위 데이터로 객체에 저장.
+		vg.parse(true);// VTD 토큰과 캐시 로케이션 정보를 출력하기로 설정한다?
 
 		// 파싱 시작
 		VTDNav vn = vg.getNav();
-		AutoPilot ap = new AutoPilot(vn);
-		ap.selectXPath("/rss/channel/item/*");
-		int result = -1;
+		AutoPilot ap = new AutoPilot(vn); // 오토 파일럿 객체 선언 
+		ap.selectXPath("/rss/channel/item/*"); // 해당 경로 아래에 있는 요소들을 검색한다.
+		int result = -1; // -1값을 갖는 변수를 선언 ( 잘 모르겠다. 아마 배열의 크기와 관계가 있는 듯하다.)
 
-		HashMap<String, String> map = null;
-		List<HashMap<String, String>> list = new ArrayList<>();
+		HashMap<String, String> map = null; // 해시맵 객체 생성.
+		List<HashMap<String, String>> list = new ArrayList<>(); // 해시맵을 포함하는 리스트 객체 생성. 리스트 인터페이스의 구현체인 어레이 리스트로 만들었다.
+		// 데이터 하나의 단위는 HashMap을 통해 받아들이고 받아들인 데이터의 관리는 ArrayList 로 한다.
 
 		// 파싱
-		while ((result = ap.evalXPath()) != -1) {
+		while ((result = ap.evalXPath()) != -1) {// 전송되는 데이터가 없을때까지 HashMap 과 ArrayList에 데이터를 입력하는 작업을 반복한다.
 			if ("title".equals(vn.toString(result))) {
-				map = new HashMap<>();
+				map = new HashMap<>(); // 반복문 내부에서 데이터가 있을 때마다 HashMap 객체를 새롭게 생성하여 데이터를 저장한다.
 			}
 
 			vn.toString(result);
 			int t = vn.getText();
 			if (t != -1) {
-				// System.out.println(vn.toString(result));
-				// System.out.println(vn.toNormalizedString(t));
+
 				map.put(vn.toString(result), vn.toNormalizedString(t));
 				if ("description".equals(vn.toString(result))) {
-					list.add(map);
+					list.add(map); // Map형식의 데이터를 ArrayList 에 저장한다.
 				}
 
 			}
 
 		}
-		// System.out.println("MAP : " + map.toString());
+
 		System.out.println("ListSize : " + list.size());
-		for (HashMap<String, String> hm : list) {
-			// System.out.println(hm);
+		for (HashMap<String, String> hm : list) { // for 문의 다른 형태는 아직 좀더 공부가 필요하다. 일단 앞 변화하는 값, 뒤가 최종 도달하는 값의 크기 라고 짐작된다.
+												  // 리스트에 저장된 데이터의 끝에 도달할 때까지 vo 객체 안에 데이터를 입력한다.
+
 			vo.setTitle(hm.get("title"));
 			vo.setAuthor(hm.get("author"));
 			vo.setImage(hm.get("image"));
 			vo.setLink(hm.get("link"));
 			vo.setPrice(Integer.parseInt(hm.get("price")));
-			// if ("title".equals(hm)){
-			// vo.setBtitle(hm.get(list));
-			// System.out.println("---------------------------------------------
-			// ");
-			// }
-			//
-			// if ("autor".equals(hm))
-			// vo.setBautor(hm.get(list));
-			//
-			// if ("image".equals(hm))
-			// vo.setBimage(hm.get(list));
-			//
-			// if ("link".equals(hm))
-			// vo.setBlink(hm.get(list));
-			//
-			// if ("price".equals(hm))
-			// vo.setBprice(Integer.parseInt(hm.get(list)));
-			// // System.out.println();
-
-			// mapper.create(vo);
+			System.out.println(hm.toString());
+			mapper.create(vo);
 		}
-
+		
 	}
-	// TODO 파싱된 데이터를 DB에 저장하는 방법이 뭐지?
-	// 1. 객체 담기
-	// 2. DB 담기
-	// 3. DB 담긴 데이터 조회
-	// TODO List DB 에 저장하는법 / 저장완
-	// TODO 이클립스 단축키
 
 	@Test
 	public void testSqlSession() throws Exception {
@@ -239,6 +200,14 @@ public class BookListApplicationTests {
 		System.out.println(con);
 
 		con.close();
+	}
+	
+	@Test
+	public void testListPage( ) throws Exception {
+		
+		int page = 1;
+		
+	
 	}
 
 }
