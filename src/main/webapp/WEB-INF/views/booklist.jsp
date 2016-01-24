@@ -6,6 +6,14 @@
 <head>
 <style type="text/css">
  .hc { width:600px; left:0; right:0; margin-left:auto; margin-right:auto; }
+ table {
+    width: 100%;
+    border-collapse: collapse;
+    
+  }
+  th, td {
+    border: 1px solid #bcbcbc;
+  }
 </style>
 
 <script type="text/javascript"
@@ -20,31 +28,24 @@
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>[무라딘] "공부하는 자들이 만드는 서점 무라딘"</title>
 </head>
 <body>
 	<h1>Book List</h1>
-	<!-- Single button -->
+	
 	<div class="btn-group">
-		<button type="button" 
-			data-toggle="dropdown" aria-expanded="false">
-			Action <span class="caret"></span>
-		</button>
-		<ul class="dropdown-menu" role="menu">
-			<li><a href="#">Action</a></li>
+		<button type="button" data-toggle="dropdown" aria-expanded="false">Action <span class="caret"></span></button>
+		<ul class="dropdown-menu" role="menu"><li><a href="#">Action</a></li>
 			<li><a href="#">Another action</a></li>
 			<li><a href="#">Something else here</a></li>
 			<li class="divider"></li>
 			<li><a href="#">Separated link</a></li>
 		</ul>
-	
-		<input type="text" name="query" id="query" accesskey="s" title="검색어"
-			class="keyword" value=""> <input type="button" id="search"
-			name="search" alt="검색" value="검색" />
+		<input type="text" name="query" id="query" accesskey="s" title="검색어" class="keyword" value=""> 
+		<input type="button" id="search" name="search" alt="검색" value="검색" />
 	</div>
+	
 	<div id="ajaxList"></div>
-	
-	
 </body>
 <script type="text/javascript">
 	$(document).ready(function() { // DOM 객체를 모두 등록하고 나서 JavaScript 를 진행한다.
@@ -52,9 +53,16 @@
 		var query = null;
 		callList(query, page); // 리스트를 불러온다.
 	});
+	
 
-	function clickPageButton(btn) {
+	function clickPageButton(btn, maximunPage) {
 		var page = (btn.value);
+		console.log(page);
+		console.log(maximunPage);
+		if(page > maximunPage ){
+			alert("마지막 페이지 입니다.");
+			page = maximunPage;
+		}
 		$('#list').remove();
 		callList($('#query').val(), page);
 	}
@@ -92,8 +100,6 @@
 	
 	function clickNextListButton(page, maximunPage) {
 		page += 10;
-		console.log(page);
-		console.log(maximunPage);
 		if(page > maximunPage ){
 			alert("마지막 페이지 입니다.");
 			page = maximunPage;
@@ -102,20 +108,31 @@
 		callList($('#query').val(), page);
 	}
 
-	$('#search').click(function() { // 검색 버튼이 눌린 경우의 화면 전환
-		if ($('#query').val() == '') {// 버튼이 눌렸을 때 검색어가 없으면 경고문을 띄운다.
+	$('#search').click(function() {
+		if ($('#query').val() == '') {
 			alert('검색어를 입력해 주세요');
 			$('#query').focus();
-		} else { // 버튼이 눌렸을 때 검색어가 있으면 새로운 창을 띄운다.
-			$('#list').remove(); // 기존의 화면 지우
-			callList($('#query').val()); // 새로운 화면을 띄우고 검색어를 전송한다.
+		} else { 
+			$('#list').remove();
+			callList($('#query').val());
 		}
+	});
+	
+	$('input').keyup(function(e) {
+	    if (e.keyCode == 13) {
+	    	if ($('#query').val() == '') {
+				alert('검색어를 입력해 주세요');
+				$('#query').focus();
+			} else { 
+				$('#list').remove();
+				callList($('#query').val());
+			}
+	    }      
 	});
 
 	function callList(query, page) {// 컨트롤러에 검색어와 페이지 데이터를 받는다.
-		$
-				.ajax({
-					url : "/jsonBookTitleList",
+		$.ajax({
+					url : "/getBookList",
 					dataType : 'json',
 					type : 'POST',
 					data : {
@@ -129,20 +146,18 @@
 						var totalCnt = result.totalCnt;
 						var pageCount = 0;
 						var listCount = 0;
+						var maximunPage = parseInt((totalCnt-1)/10+1);
+						var startPage = parseInt((page-1)/10)*10;
 						var content = "<div class='table-responsive'>"
 						content += "<table  class='table' id = 'list' >";
-						var maximunPage = parseInt(totalCnt/10+1);
-						var startPage = parseInt((page-1)/10)*10;
 						
 						$.each(list, function(key, value) {
 
 							var resp = list[key];
-
+							
 							if (parseInt(key / 10) == page - 1) {
 								content += "<tr>";
-								content += "<td>"
-										+ "<img src =" + resp.image +"/>"
-										+ "</td>";
+								content += "<td>" + "<img src =" + resp.image +"/>" + "</td>";
 								content += "<td>" + resp.id + "</td>";
 								content += "<td>" + resp.title + "</td>";
 								content += "<td>" + resp.author + "</td>";
@@ -162,9 +177,9 @@
 						for (var i = startPage+1 ; i <= startPage+10 ;  i++) {
 							
 							if(i == page){
-								content += "<button type='button' id='page"+ i + "' value = '"	+ i + "' class='btn rimary btn-lg active' onclick = 'clickPageButton(this)'>" + i + "</button>";
+								content += "<button type='button' id='page"+ i + "' value = '"	+ i + "' class='btn rimary btn-lg active' onclick = 'clickPageButton(this,"+ maximunPage +")'>" + i + "</button>";
 							}else{
-								content += "<button type='button' id='page"+ i + "' value = '"	+ i + "' class='btn btn-default' onclick = 'clickPageButton(this)'>" + i + "</button>";
+								content += "<button type='button' id='page"+ i + "' value = '"	+ i + "' class='btn btn-default' onclick = 'clickPageButton(this,"+ maximunPage +")'>" + i + "</button>";
 							}
 							
 						}

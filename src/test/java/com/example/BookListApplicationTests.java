@@ -64,6 +64,15 @@ public class BookListApplicationTests {
 		System.out.println(result.toString());
 
 	}
+	
+	@Test
+	public void testListCount() throws Exception {
+
+		int result;
+		result = mapper.getBookListTotalCount();
+		System.out.println(result);
+
+	}
 
 	@Test
 	public void testInsert() throws Exception {
@@ -91,7 +100,6 @@ public class BookListApplicationTests {
 
 		System.out.println(vo.toString());
 
-		result = mapper.read(vo.getId());
 
 		org.junit.Assert.assertEquals(1000, result.getPrice());
 
@@ -107,7 +115,6 @@ public class BookListApplicationTests {
 
 		System.out.println(vo.toString());
 
-		result = mapper.read(vo.getId());
 
 		org.junit.Assert.assertEquals(1000, result.getPrice());
 
