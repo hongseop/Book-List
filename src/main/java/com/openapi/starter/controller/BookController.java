@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +24,13 @@ import com.openapi.starter.vo.BookVO;
 @RestController
 public class BookController {
 
+	private static final Logger logger = LoggerFactory.getLogger(BookController.class);
+
 	@Autowired
 	private BookMapper mapper;
 
 	@RequestMapping(value = "/getBookList")
-	
+
 	public HashMap<String, Object> getBookList(HttpServletRequest request) throws Exception {
 
 		String page = request.getParameter("page");
@@ -71,8 +75,8 @@ public class BookController {
 		String inputLine = null;
 		StringBuilder sb = new StringBuilder();
 		Util parser = new Util();
-		List<HashMap<String, String>>list = parser.XMLDataParser(sb,inputLine,in);
-		
+		List<HashMap<String, String>> list = parser.XMLDataParser(sb, inputLine, in);
+
 		for (HashMap<String, String> hm : list) { // for 문의 다른 형태는 아직 좀더 공부가
 													// 필요하다. 일단 앞 변화하는 값, 뒤가 최종
 													// 도달하는 값의 크기 라고 짐작된다.
@@ -87,5 +91,4 @@ public class BookController {
 		}
 	}
 
-	
 }

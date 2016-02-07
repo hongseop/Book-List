@@ -158,7 +158,7 @@
 							if (parseInt(key / 10) == page - 1) {
 								content += "<tr>";
 								content += "<td>" + "<img src =" + resp.image +"/>" + "</td>";
-								content += "<td>" + resp.id + "</td>";
+								content += "<td>" + (key+1) + "</td>";
 								content += "<td>" + resp.title + "</td>";
 								content += "<td>" + resp.author + "</td>";
 								content += "<td>" + resp.price + "</td>";

@@ -28,5 +28,8 @@ public interface BookMapper {
 
 	@Select("SELECT COUNT(*) FROM book_list WHERE title LIKE '%${title}%'")
 	public int getBookListSearchCount(@Param("title") String title) throws Exception;
+	
+	@Select("SELECT pass FROM book_user WHERE uid=#{pass}")
+	public String getUserPassword(@Param ("pass") String pass) throws Exception;
 
 }

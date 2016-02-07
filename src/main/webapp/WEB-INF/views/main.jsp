@@ -3,48 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style type="text/css">
-header {
-	background-color: #FFFFFF;
-	width: 100%;
-	height: 50px;
-	margin: 0px;
-	text-align: center;
-	padding: 5px;
-	border: 0px;
-}
-
-h1 {
-	margin: 0px;
-}
-
-nav {
-	background-color: #FFFFFF; width : 100%;
-	height: 50px;
-	margin: 0px;
-	text-align: center;
-	padding: 5px;
-	width: 100%;
-}
-
-section{
-background-color: #FFFFFF;
-	width: 100%;
-	height: 600px;
-	margin: 0px;
-	text-align: center;
-	padding: 5px;
-}
-
-footer {
-	background-color: #FFFFFF;
-	width: 100%;
-	height: 50px;
-	margin: 0px;
-	text-align: center;
-	padding: 5px;
-}
-</style>
+<link type = "text/css" rel="stylesheet"  href="./css/main.css">
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>[무라딘] "공부하는 자들이 만드는 서점 무라딘"</title>
@@ -54,11 +13,11 @@ footer {
 		<h1>무라딘 온라인 서점</h1>
 		<hr />
 	</header>
-
 	<nav>
 			<a href="booklist">도서검색</a>
 			<a href="login">로그인</a>
 			<a href="register">회원가입</a>
+			<a href="logout">로그아웃</a>
 			<hr />
 	</nav>
 	<section>
