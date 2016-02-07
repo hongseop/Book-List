@@ -1,0 +1,20 @@
+코딩 임시저
+
+<!-- <script type="text/javascript">
+		var str = "시험용 문자열";
+		var msg = "<c:out value=${msg}/>";
+		var strArray = msg.split('BookVO');
+		var i=0;
+		var j=0;
+		var fieldArray;
+		document.write(msg);
+		
+		for (i = 0; i<strArray.length; i++)
+		{
+			/* document.write(strArray[i] + "<br /><br />"); */ //0 만 출력된다. 이유가 뭐지? 헉... for 문 밖에서 변수를 선언하고 사용하니 0~4까지의 값이 출력되었다. 내가 아는 자바의 for 문과는 조금 다른것 같다.
+			fieldArray = strArray[i].split(",");
+			for(j = 0; j<fieldArray.length; j++){
+				document.write(fieldArray[j] + "<br />");
+			}
+		}
+	</script> -->
